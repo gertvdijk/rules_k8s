@@ -163,10 +163,12 @@ def _common_impl(ctx):
 
     namespace_arg = ctx.attr.namespace
     namespace_arg = ctx.expand_make_variables("namespace", namespace_arg, {})
+    namespace_name = namespace_arg
     if "{" in ctx.attr.namespace:
         namespace_file = ctx.actions.declare_file(ctx.label.name + ".namespace-name")
         _resolve(ctx, ctx.attr.namespace, namespace_file)
         namespace_arg = "$(cat %s)" % _runfiles(ctx, namespace_file)
+        namespace_name = namespace_arg
         files += [namespace_file]
 
     if namespace_arg:
@@ -193,6 +195,7 @@ def _common_impl(ctx):
             "%{kind}": ctx.attr.kind,
             "%{kubectl_tool}": kubectl_tool,
             "%{namespace_arg}": namespace_arg,
+            "%{namespace_name}": namespace_name,
             "%{user}": user_arg,
         }
 

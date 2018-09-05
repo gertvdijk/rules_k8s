@@ -25,5 +25,9 @@ function exe() { echo "\$ ${@/eval/}" ; "$@" ; }
 
 RUNFILES="${PYTHON_RUNFILES:-$(guess_runfiles)}"
 
+# Create namespace if it does not exists yet.
+exe  %{kubectl_tool} --cluster="%{cluster}" --context="%{context}" --user="%{user}" get namespace "%{namespace_name}" >/dev/null 2>&1 \
+|| exe  %{kubectl_tool} --cluster="%{cluster}" --context="%{context}" --user="%{user}" create namespace "%{namespace_name}"
+
 PYTHON_RUNFILES=${RUNFILES} %{resolve_script} | \
   exe  %{kubectl_tool} --cluster="%{cluster}" --context="%{context}" --user="%{user}" %{namespace_arg} apply $@ -f -
